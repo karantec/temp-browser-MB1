@@ -79,11 +79,14 @@ export default function PathMapCanvas({ liveData }) {
     currentAngle,
     passedPoints: smoothPassed,
     remainingPoints: smoothRemaining,
+    activeSeq,
   } = useSmoothLocation({
     currentReader: activeReader,
     allReaders,
     baseDuration: 400,
   });
+
+  const animatedSeq = activeSeq ?? currentSeq;
 
   // SVG coordinate helpers (viewBox 1000 × 700)
   const px = (x) => (x / 100) * 1000;
@@ -260,7 +263,7 @@ export default function PathMapCanvas({ liveData }) {
             {allReaders.map((r, i) => {
               if (!isTurnPoint(allReaders, i)) return null;
               // Skip already-passed turns
-              if (r.sequence < currentSeq) return null;
+              if (r.sequence < animatedSeq) return null;
 
               const cx = px(r.coords.x);
               const cy = py(r.coords.y);
@@ -303,8 +306,8 @@ export default function PathMapCanvas({ liveData }) {
               if (r.isWaypoint) return null;
               const cx = px(r.coords.x);
               const cy = py(r.coords.y);
-              const isPassed = r.sequence < currentSeq;
-              const isCurrent = r.sequence === currentSeq;
+              const isPassed = r.sequence < animatedSeq;
+              const isCurrent = r.sequence === animatedSeq;
               const isDestination = r.sequence === destinationReader?.sequence;
 
               // Colors based on status

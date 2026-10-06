@@ -256,11 +256,14 @@ function FlatPathLayer({ liveData }) {
     currentAngle,
     passedPoints: smoothPassed,
     remainingPoints: smoothRemaining,
+    activeSeq,
   } = useSmoothLocation({
     currentReader: activeReader,
     allReaders,
     baseDuration: 400,
   });
+
+  const animatedSeq = activeSeq ?? currentSeq;
 
   // 3D Point arrays for R3F Line
   const allPoints3D = useMemo(() => {
@@ -334,7 +337,7 @@ function FlatPathLayer({ liveData }) {
       {/* ── 5. Turn Chevrons flat on 3D floor at direction-change points ── */}
       {allReaders.map((r, i) => {
         if (!isTurnPoint(allReaders, i)) return null;
-        if (r.sequence < currentSeq) return null; // skip passed
+        if (r.sequence < animatedSeq) return null; // skip passed
 
         const [wx, wy, wz] = pctToWorld(r.coords.x, r.coords.y, 0.18);
         const next = allReaders[i + 1].coords;
